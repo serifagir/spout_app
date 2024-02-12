@@ -17,7 +17,7 @@ class SpoutApp extends StatelessWidget {
         viewModelBuilder: () => locator<AppBaseViewModel>(),
         onViewModelReady: (viewModel) => viewModel.init(),
         builder: (context, viewModel, child) => MaterialApp(
-              theme: ThemeData.light(),
+              theme: ThemeData(platform: TargetPlatform.iOS),
               darkTheme: ThemeData.dark(),
               themeMode: locator<AppBaseViewModel>().themeMode,
               navigatorKey: StackedService.navigatorKey,

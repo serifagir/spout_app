@@ -8,4 +8,7 @@ class MainViewModel extends AppBaseViewModel {
       navigationService.navigateTo(Routes.settingsView);
 
   void navigateToStats() => navigationService.navigateTo(Routes.statsView);
+
+  void navigateToCustomize() =>
+      navigationService.navigateTo(Routes.customizeView);
 }
