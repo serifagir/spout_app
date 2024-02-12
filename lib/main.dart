@@ -1,20 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:spout_app/app/spout_app.dart';
+import 'package:spout_app/core/di/locator.dart';
 
 void main() {
-  runApp(const MainApp());
-}
-
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
-    );
-  }
+  WidgetsFlutterBinding.ensureInitialized();
+  setupLocator();
+  runApp(const SpoutApp());
 }
