@@ -1,25 +1,29 @@
 import 'package:flutter/material.dart';
 
-class LightModeColors {
-  static const primaryColor = Colors.white;
-  static const secondaryColor = Colors.black;
-}
-
-class DarkModeColors {
-  static const primaryColor = Colors.black;
-  static const secondaryColor = Colors.white;
-}
-
-final ThemeData lightTheme = ThemeData(
-  colorScheme: const ColorScheme.light(
-    primary: LightModeColors.primaryColor,
-    secondary: LightModeColors.secondaryColor,
+ThemeData dark = ThemeData(
+  primaryColor: Color(Colors.black.value),
+  scaffoldBackgroundColor: Color(Colors.black.value),
+  colorScheme: ColorScheme.dark(
+    primary: Color(Colors.white.value),
+    secondary: Color(Colors.white.value),
+    surface: Color(Colors.black.value),
+    background: Color(Colors.white.value),
+    error: Color(Colors.black.value),
+    onPrimary: Color(Colors.white.value),
+    onSecondary: Color(Colors.white.value),
+    onSurface: Color(Colors.white.value),
+    onBackground: Color(Colors.black.value),
+    onError: Color(Colors.black.value),
+    surfaceTint: Color(Colors.white.value),
   ),
+  iconButtonTheme: IconButtonThemeData(
+      style: ButtonStyle(
+          splashFactory: NoSplash.splashFactory,
+          overlayColor: MaterialStateProperty.all(Colors.transparent))),
 );
 
-final ThemeData darkTheme = ThemeData(
-  colorScheme: const ColorScheme.dark(
-    primary: DarkModeColors.primaryColor,
-    secondary: DarkModeColors.secondaryColor,
-  ),
+ThemeData light = ThemeData(
+  brightness: Brightness.dark,
+  primaryColor: Color(Colors.black.value),
+  scaffoldBackgroundColor: const Color(0xFF0A0E21),
 );

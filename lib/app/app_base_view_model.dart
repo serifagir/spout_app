@@ -2,16 +2,16 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spout_app/core/di/locator.dart';
+import 'package:spout_app/core/models/user_settings.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class AppBaseViewModel extends BaseViewModel {
   final navigationService = locator<NavigationService>();
-  ThemeMode themeMode = ThemeMode.light;
-  void init() {
-    loadValueFromSharedPreferences();
-    resetTimer();
-  }
+  UserSettings userSettings = locator<UserSettings>();
+  late SharedPreferences prefs;
+  ThemeMode themeMode = ThemeMode.dark;
+  void init() {}
 
   changeTheme() {
     if (themeMode == ThemeMode.dark) {
@@ -21,106 +21,89 @@ class AppBaseViewModel extends BaseViewModel {
     }
     print(themeMode);
     locator<AppBaseViewModel>().notifyListeners();
+    notifyListeners();
   }
 
-  //---------------------------- Timer Logic ---------------------------- //
+  AppBaseViewModel() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _initSharedPreferences();
+      print(userSettings.spoutDuration);
+      loadSettingsFromSharedPreferences();
+      resetTimer();
+    });
+  }
+  // final SoundSelectionProvider _audioProvider = SoundSelectionProvider();
+
   late Timer _timer;
-  static int _currentSession = 1;
-  late int _currentTimeInSeconds;
+  int _currentRound = 1;
+
+  late int _currentTimeInSeconds = 0;
 
   bool _isRunning = false;
   bool _isBreakTime = false;
 
-  int get currentSession => _currentSession;
-  bool get isRunning => _isRunning;
-  bool get isBreakTime => _isBreakTime;
-  int get currentTimeInSeconds => _currentTimeInSeconds;
-
-  late SharedPreferences _sharedPreferences;
-
-  static late int _spoutDurationValue;
-  static late int _breakDurationValue;
-  static late int _longBreakDurationValue;
-  static late int _sessionCountValue;
-
-  static int get spoutDurationValue => _spoutDurationValue;
-  static int get breakDurationValue => _breakDurationValue;
-  static int get longBreakDurationValue => _longBreakDurationValue;
-  static int get sessionCountValue => _sessionCountValue;
-
-  void updateSpoutDurationValue(int newValue) {
-    _spoutDurationValue = newValue;
-    saveValueToSharedPreferences("spoutDurationValue", newValue);
-    locator<AppBaseViewModel>().notifyListeners();
+  /// SHARED PREFERENCES
+  Future<void> _initSharedPreferences() async {
+    prefs = await SharedPreferences.getInstance();
   }
 
-  void updateBreakDurationValue(int newValue) {
-    _breakDurationValue = newValue;
-    saveValueToSharedPreferences("breakDurationValue", newValue);
-    locator<AppBaseViewModel>().notifyListeners();
-  }
-
-  void updateLongBreakDurationValue(int newValue) {
-    _longBreakDurationValue = newValue;
-    saveValueToSharedPreferences("longBreakDurationValue", newValue);
-    locator<AppBaseViewModel>().notifyListeners();
-  }
-
-  void updateSessionCountValue(int newValue) {
-    _sessionCountValue = newValue;
-    saveValueToSharedPreferences("sessionCountValue", newValue);
-    locator<AppBaseViewModel>().notifyListeners();
-  }
-
-  Future<void> createSharedPreferencesInstance() async {
-    _sharedPreferences = await SharedPreferences.getInstance();
-  }
-
-  saveValueToSharedPreferences(String key, int value) {
-    _sharedPreferences.setInt(key, value);
-  }
-
-  Future<void> loadValueFromSharedPreferences() async {
-    await createSharedPreferencesInstance();
-    _spoutDurationValue = _sharedPreferences.getInt("spoutDurationValue") ?? 25;
-    _breakDurationValue = _sharedPreferences.getInt("breakDurationValue") ?? 5;
-    _longBreakDurationValue =
-        _sharedPreferences.getInt("longBreakDurationValue") ?? 15;
-    _sessionCountValue = _sharedPreferences.getInt("sessionCountValue") ?? 4;
+  void loadSettingsFromSharedPreferences() {
+    userSettings.autoStartNextSession =
+        prefs.getBool('autoStartNextSession') ?? false;
+    userSettings.screenAlwaysOn = prefs.getBool('screenAlwaysOn') ?? false;
+    userSettings.currentLanguage =
+        prefs.getString('currentLanguage') ?? 'English';
+    userSettings.sounds = prefs.getBool('sounds') ?? true;
+    userSettings.tickingSounds = prefs.getBool('tickingSounds') ?? true;
+    userSettings.ambientSounds = prefs.getBool('ambientSounds') ?? true;
+    userSettings.vibration = prefs.getBool('vibration') ?? true;
+    userSettings.notifications = prefs.getBool('notifications') ?? true;
+    userSettings.sessionCount = prefs.getInt('sessionCount') ?? 3;
+    userSettings.longBreakDuration = prefs.getInt('longBreakDuration') ?? 45;
+    userSettings.breakDuration = prefs.getInt('breakDuration') ?? 5;
+    userSettings.spoutDuration = prefs.getInt('spoutDuration') ?? 25;
     notifyListeners();
   }
 
+  ///TIMER
+
+  bool get isRunning => _isRunning;
+
+  bool get isBreakTime => _isBreakTime;
+
+  int get currentTimeInSeconds => _currentTimeInSeconds;
+
+  int get currentRound => _currentRound;
+
   int get maxTimeInSeconds =>
       (_isBreakTime
-          ? (_currentSession == sessionCountValue
-              ? longBreakDurationValue
-              : breakDurationValue)
-          : spoutDurationValue) *
+          ? (_currentRound == userSettings.sessionCount
+              ? userSettings.longBreakDuration
+              : userSettings.breakDuration)
+          : userSettings.spoutDuration) *
       60;
 
-  bool get isEqual => _currentTimeInSeconds == maxTimeInSeconds;
+  bool get isEqual => currentTimeInSeconds == maxTimeInSeconds;
 
   String get currentTimeDisplay {
-    final int minutes = _currentTimeInSeconds ~/ 60;
-    final int seconds = _currentTimeInSeconds % 60;
-    final String minutesStr = (minutes % 60).toString().padLeft(2, '0');
-    final String secondsStr = seconds.toString().padLeft(2, '0');
-    return "$minutesStr:$secondsStr";
+    int minutes = _currentTimeInSeconds ~/ 60;
+    int seconds = _currentTimeInSeconds % 60;
+    return '$minutes:${seconds.toString().padLeft(2, '0')}';
   }
 
   String get currentRoundDisplay {
-    return "$_currentSession/$sessionCountValue";
+    return 'Round $_currentRound of ${userSettings.sessionCount}';
   }
 
   void toggleTimer() {
     if (!_isRunning) {
       _isRunning = true;
       _timer = Timer.periodic(const Duration(seconds: 1), _updateTimer);
-      locator<AppBaseViewModel>().notifyListeners();
+      notifyListeners();
     } else {
       _timer.cancel();
       _isRunning = false;
-      locator<AppBaseViewModel>().notifyListeners();
+      notifyListeners();
     }
   }
 
@@ -128,29 +111,30 @@ class AppBaseViewModel extends BaseViewModel {
     if (_isRunning) {
       _timer.cancel();
       _isRunning = false;
-      locator<AppBaseViewModel>().notifyListeners();
+      notifyListeners();
     }
 
     _timeControl();
 
-    // if (AutoStartProivder.autoStart == false) {
-    //   _timer.cancel();
-    //   _isRunning = false;
-    //   locator<AppBaseViewModel>().notifyListeners();
-    // }
+    if (userSettings.autoStartNextSession == false) {
+      _timer.cancel();
+      _isRunning = false;
+      notifyListeners();
+    }
   }
 
   void _timeControl() {
     if (_isBreakTime) {
-      _currentTimeInSeconds = spoutDurationValue * 60;
+      _currentTimeInSeconds = userSettings.spoutDuration * 60;
       _addRound();
     } else {
-      if (_currentSession == sessionCountValue) {
-        _currentTimeInSeconds = longBreakDurationValue * 60;
+      if (_currentRound == userSettings.sessionCount) {
+        _currentTimeInSeconds = userSettings.longBreakDuration * 60;
       } else {
-        _currentTimeInSeconds = breakDurationValue * 60;
+        _currentTimeInSeconds = userSettings.breakDuration * 60;
       }
     }
+
     _isBreakTime = !_isBreakTime;
     toggleTimer();
   }
@@ -158,32 +142,33 @@ class AppBaseViewModel extends BaseViewModel {
   void _updateTimer(Timer timer) {
     if (_currentTimeInSeconds > 0) {
       _currentTimeInSeconds--;
-      locator<AppBaseViewModel>().notifyListeners();
+      notifyListeners();
     } else {
-      _timer.cancel();
+      _timer.cancel(); // previous timer
       _isRunning = false;
 
-      // if (!_isBreakTime) {
-      //   statsProvider.addCompletedFlux(Flux());
+      _timeControl();
+
+      if (userSettings.autoStartNextSession == false) {
+        _timer.cancel(); // next timer
+        _isRunning = false;
+        notifyListeners();
+      }
+
+      // if (NotificationProvider.isActive) {
+      //   _audioProvider.playSelectedAudio();
       // }
     }
-    _timeControl();
-
-    // if (AutoStartProvider.autostart == false) {
-    //   _timer.cancel();
-    //   _isRunning = false;
-    //   locator<AppBaseViewModel>().notifyListeners();
-    // }
   }
 
   void _addRound() {
-    _currentSession < _sessionCountValue
-        ? _currentSession++
-        : _currentSession = 1;
+    _currentRound < userSettings.sessionCount
+        ? _currentRound++
+        : _currentRound = 1;
   }
 
   void resetTimer() {
-    _currentSession = maxTimeInSeconds;
-    locator<AppBaseViewModel>().notifyListeners();
+    _currentTimeInSeconds = maxTimeInSeconds;
+    notifyListeners();
   }
 }

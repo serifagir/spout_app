@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:spout_app/app/app.router.dart';
 import 'package:spout_app/app/app_base_view_model.dart';
+import 'package:spout_app/common/constants/theme.dart';
 import 'package:spout_app/core/di/locator.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -17,8 +18,8 @@ class SpoutApp extends StatelessWidget {
         viewModelBuilder: () => locator<AppBaseViewModel>(),
         onViewModelReady: (viewModel) => viewModel.init(),
         builder: (context, viewModel, child) => MaterialApp(
-              theme: ThemeData(platform: TargetPlatform.iOS),
-              darkTheme: ThemeData.dark(),
+              theme: light,
+              darkTheme: dark,
               themeMode: locator<AppBaseViewModel>().themeMode,
               navigatorKey: StackedService.navigatorKey,
               onGenerateRoute: StackedRouter().onGenerateRoute,
