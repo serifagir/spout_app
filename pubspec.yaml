@@ -17,6 +17,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   google_fonts: ^6.1.0
   settings_ui: ^2.0.2
+  fl_chart: ^0.66.2
 
   
 

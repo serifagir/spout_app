@@ -23,7 +23,23 @@ ThemeData dark = ThemeData(
 );
 
 ThemeData light = ThemeData(
-  brightness: Brightness.dark,
-  primaryColor: Color(Colors.black.value),
-  scaffoldBackgroundColor: const Color(0xFF0A0E21),
+  primaryColor: Color(Colors.white.value),
+  scaffoldBackgroundColor: Color(Colors.white.value),
+  colorScheme: ColorScheme.light(
+    primary: Color(Colors.black.value),
+    secondary: Color(Colors.black.value),
+    surface: Color(Colors.white.value),
+    background: Color(Colors.black.value),
+    error: Color(Colors.white.value),
+    onPrimary: Color(Colors.black.value),
+    onSecondary: Color(Colors.black.value),
+    onSurface: Color(Colors.black.value),
+    onBackground: Color(Colors.white.value),
+    onError: Color(Colors.white.value),
+    surfaceTint: Color(Colors.black.value),
+  ),
+  iconButtonTheme: IconButtonThemeData(
+      style: ButtonStyle(
+          splashFactory: NoSplash.splashFactory,
+          overlayColor: MaterialStateProperty.all(Colors.transparent))),
 );

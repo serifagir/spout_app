@@ -10,5 +10,5 @@ class SpoutDurationViewModel extends AppBaseViewModel {
     notifyListeners();
   }
 
-  final List spoutDurations = [25, 30, 40, 45, 50, 60, 90];
+  final List spoutDurations = [5, 25, 30, 40, 45, 50, 60, 90];
 }

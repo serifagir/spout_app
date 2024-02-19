@@ -40,8 +40,7 @@ class MainView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       IconButton(
-                        onPressed: () =>
-                            viewModel.isEqual ? null : viewModel.resetTimer(),
+                        onPressed: () => viewModel.resetAllSessions(),
                         icon: const Icon(
                           CupertinoIcons.refresh,
                           size: 30,
@@ -54,16 +53,18 @@ class MainView extends StatelessWidget {
                         hoverColor: Colors.transparent,
                         onPressed: () => viewModel.toggleTimer(),
                         icon: Icon(
-                          viewModel.isEqual
-                              ? CupertinoIcons.play
-                              : CupertinoIcons.pause,
+                          viewModel.isRunning
+                              ? CupertinoIcons.pause
+                              : CupertinoIcons.play,
                           size: 40,
                         ),
                       ),
                       IconButton(
                         onPressed: () => viewModel.jumpNextRound(),
-                        icon: const Icon(
-                          CupertinoIcons.forward_end,
+                        icon: Icon(
+                          viewModel.isBreakTime
+                              ? CupertinoIcons.forward_end
+                              : null,
                           size: 30,
                         ),
                       ),
@@ -155,7 +156,11 @@ class SessionNameIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      viewModel.isBreakTime ? "break" : "spout",
+      viewModel.isBreakTime
+          ? viewModel.currentRound == viewModel.userSettings.sessionCount
+              ? 'Long Break'
+              : 'Break'
+          : 'Spout',
       style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w500),
     );
   }

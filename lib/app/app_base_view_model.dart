@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spout_app/core/di/locator.dart';
+import 'package:spout_app/core/models/spout.dart';
+import 'package:spout_app/core/models/user_progress.dart';
 import 'package:spout_app/core/models/user_settings.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -10,6 +12,7 @@ class AppBaseViewModel extends BaseViewModel {
   final navigationService = locator<NavigationService>();
   UserSettings userSettings = locator<UserSettings>();
   late SharedPreferences prefs;
+  UserProgress userProgress = locator<UserProgress>();
   ThemeMode themeMode = ThemeMode.dark;
   void init() {}
 
@@ -81,7 +84,7 @@ class AppBaseViewModel extends BaseViewModel {
               ? userSettings.longBreakDuration
               : userSettings.breakDuration)
           : userSettings.spoutDuration) *
-      60;
+      1;
 
   bool get isEqual => currentTimeInSeconds == maxTimeInSeconds;
 
@@ -125,13 +128,14 @@ class AppBaseViewModel extends BaseViewModel {
 
   void _timeControl() {
     if (_isBreakTime) {
-      _currentTimeInSeconds = userSettings.spoutDuration * 60;
+      _currentTimeInSeconds = userSettings.spoutDuration * 1;
       _addRound();
     } else {
+      addSpoutToUserProgress(currentTimeInSeconds);
       if (_currentRound == userSettings.sessionCount) {
-        _currentTimeInSeconds = userSettings.longBreakDuration * 60;
+        _currentTimeInSeconds = userSettings.longBreakDuration * 1;
       } else {
-        _currentTimeInSeconds = userSettings.breakDuration * 60;
+        _currentTimeInSeconds = userSettings.breakDuration * 1;
       }
     }
 
@@ -169,6 +173,24 @@ class AppBaseViewModel extends BaseViewModel {
 
   void resetTimer() {
     _currentTimeInSeconds = maxTimeInSeconds;
+    notifyListeners();
+  }
+
+  void resetAllSessions() {
+    _currentRound = 1;
+    _isBreakTime = false;
+    resetTimer();
+    _timer.cancel();
+    _isRunning = false;
+    notifyListeners();
+  }
+
+  void addSpoutToUserProgress(int minutes) {
+    userProgress.spouts.add(Spout(
+      durationInMinutes: minutes,
+      startDate: DateTime.now(),
+    ));
+    print(userProgress.spouts.length);
     notifyListeners();
   }
 }

@@ -36,6 +36,13 @@ class SettingsView extends StatelessWidget {
                   viewModel.initSettingsViewModel(),
               viewModelBuilder: () => SettingsViewModel(),
               builder: (context, viewModel, child) => SettingsList(
+                lightTheme: const SettingsThemeData(
+                  tileDescriptionTextColor: Colors.black,
+                  titleTextColor: Colors.black,
+                  settingsListBackground: Colors.white,
+                  settingsTileTextColor: Colors.black,
+                  leadingIconsColor: Colors.black,
+                ),
                 darkTheme: const SettingsThemeData(
                   tileDescriptionTextColor: Colors.white,
                   titleTextColor: Colors.white,
