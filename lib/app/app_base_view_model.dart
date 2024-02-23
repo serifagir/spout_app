@@ -22,7 +22,6 @@ class AppBaseViewModel extends BaseViewModel {
     } else {
       themeMode = ThemeMode.dark;
     }
-    print(themeMode);
     locator<AppBaseViewModel>().notifyListeners();
     notifyListeners();
   }
@@ -30,7 +29,6 @@ class AppBaseViewModel extends BaseViewModel {
   AppBaseViewModel() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _initSharedPreferences();
-      print(userSettings.spoutDuration);
       loadSettingsFromSharedPreferences();
       resetTimer();
     });
@@ -67,6 +65,8 @@ class AppBaseViewModel extends BaseViewModel {
     userSettings.spoutDuration = prefs.getInt('spoutDuration') ?? 25;
     notifyListeners();
   }
+
+  ///FIREBASE
 
   ///TIMER
 
@@ -189,8 +189,8 @@ class AppBaseViewModel extends BaseViewModel {
     userProgress.spouts.add(Spout(
       durationInMinutes: minutes,
       startDate: DateTime.now(),
+      isCompleted: true,
     ));
-    print(userProgress.spouts.length);
     notifyListeners();
   }
 }

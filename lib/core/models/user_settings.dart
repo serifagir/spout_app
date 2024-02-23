@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class UserSettings {
   ///LANGUAGE
   String currentLanguage = "English";

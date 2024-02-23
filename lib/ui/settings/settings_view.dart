@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,29 +14,26 @@ class SettingsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return ViewModelBuilder.reactive(
         onViewModelReady: (viewModel) => viewModel.initSettingsViewModel(),
         viewModelBuilder: () => SettingsViewModel(),
         builder: (context, viewModel, child) => Scaffold(
-            appBar: AppBar(
-                title: Text(
-                  "Settings",
-                  style: GoogleFonts.poppins(
-                    textStyle: const TextStyle(
-                        fontSize: 25, fontWeight: FontWeight.w700),
+              appBar: AppBar(
+                  title: Text(
+                    "Settings",
+                    style: GoogleFonts.poppins(
+                      textStyle: const TextStyle(
+                          fontSize: 25, fontWeight: FontWeight.w700),
+                    ),
                   ),
-                ),
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () {
-                    viewModel.navigationService.navigateToMainView();
-                  },
-                )),
-            body: ViewModelBuilder.reactive(
-              onViewModelReady: (viewModel) =>
-                  viewModel.initSettingsViewModel(),
-              viewModelBuilder: () => SettingsViewModel(),
-              builder: (context, viewModel, child) => SettingsList(
+                  leading: IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () {
+                      viewModel.navigationService.navigateToMainView();
+                    },
+                  )),
+              body: SettingsList(
                 lightTheme: const SettingsThemeData(
                   tileDescriptionTextColor: Colors.black,
                   titleTextColor: Colors.black,
@@ -52,11 +50,13 @@ class SettingsView extends StatelessWidget {
                 ),
                 platform: DevicePlatform.iOS,
                 sections: [
+                  CustomSettingsSection(
+                      child: SettingsUserProfileTile(size: size)),
                   SettingsSection(
                     title: Text(
                       'App',
                       style: GoogleFonts.poppins(
-                        textStyle: TextStyle(
+                        textStyle: const TextStyle(
                             fontSize: 20, fontWeight: FontWeight.w700),
                       ),
                     ),
@@ -211,6 +211,55 @@ class SettingsView extends StatelessWidget {
                   ),
                 ],
               ),
-            )));
+            ));
+  }
+}
+
+class SettingsUserProfileTile extends StatelessWidget {
+  const SettingsUserProfileTile({
+    super.key,
+    required this.size,
+  });
+
+  final Size size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+          horizontal: size.width * 0.05, vertical: size.height * 0.005),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: size.width * 0.1,
+          ),
+          const SizedBox(
+            width: 20,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'John Doe',
+                style: GoogleFonts.poppins(
+                  textStyle: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.w700),
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Text(
+                'Free Plan',
+                style: GoogleFonts.poppins(
+                  textStyle: const TextStyle(
+                      fontSize: 15, fontWeight: FontWeight.w400),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
   }
 }

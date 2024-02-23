@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "262748035438",
+    "project_id": "spout-app",
+    "storage_bucket": "spout-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:262748035438:android:89c4b8d92eb9f0ab19097f",
+        "android_client_info": {
+          "package_name": "com.example.spout_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyComo6zns2mIyIYWoWHxwF3HhoGqExv1FI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:spout_app/app/app_base_view_model.dart';
 import 'package:spout_app/core/di/locator.dart';
 import 'package:spout_app/core/helpers/shared_preferences_helpers.dart';
 
 class SettingsViewModel extends AppBaseViewModel {
-  initSettingsViewModel() {}
+  initSettingsViewModel() {
+    print(FirebaseAuth.instance.currentUser);
+  }
 
   get currentLanguage =>
       locator<AppBaseViewModel>().userSettings.currentLanguage;

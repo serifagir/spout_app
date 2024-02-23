@@ -1,3 +1,6 @@
+import 'package:spout_app/ui/auth/login/login_view.dart';
+import 'package:spout_app/ui/auth/register/register_view.dart';
+import 'package:spout_app/ui/auth/user/user_view.dart';
 import 'package:spout_app/ui/customize/customize_view.dart';
 import 'package:spout_app/ui/main/main_view.dart';
 import 'package:spout_app/ui/settings/break_duration/break_duration_view.dart';
@@ -25,7 +28,12 @@ import 'package:stacked/stacked_annotations.dart';
     MaterialRoute(page: SpoutDurationView),
     MaterialRoute(page: BreakDurationView),
     MaterialRoute(page: LongBreakDurationView),
-    MaterialRoute(page: SessionCountView)
+    MaterialRoute(page: SessionCountView),
+
+    /// AUTH VIEWS
+    MaterialRoute(page: UserView),
+    MaterialRoute(page: LoginView),
+    MaterialRoute(page: RegisterView),
   ],
 )
 class App {}

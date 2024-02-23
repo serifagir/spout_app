@@ -72,8 +72,8 @@ class MainView extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                    bottom: 0,
-                    right: 0,
+                    bottom: 20,
+                    right: 10,
                     child: IconButton(
                       onPressed: () => viewModel.navigateToStats(),
                       icon: const Icon(
@@ -82,8 +82,8 @@ class MainView extends StatelessWidget {
                       ),
                     )),
                 Positioned(
-                    bottom: 0,
-                    left: 0,
+                    bottom: 20,
+                    left: 10,
                     child: IconButton(
                       onPressed: () => viewModel.navigateToSettings(),
                       icon: const Icon(
